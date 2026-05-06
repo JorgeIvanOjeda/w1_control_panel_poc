@@ -3,91 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>W1 BMX Club - Registro Familiar</title>
+    <title>W1 BMX Club - Control de Clases</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-        h1 { color: #1a73e8; text-align: center; margin-bottom: 30px; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h1, h2 { text-align: center; color: #1a73e8; }
         
-        /* Sección Formulario */
-        .seccion-registro { background: #fff; border: 1px solid #e0e0e0; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
-        .grid-responsable { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .input-group { display: flex; flex-direction: column; gap: 5px; }
-        label { font-size: 13px; font-weight: bold; color: #666; }
-        input, select { padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
+        /* Estilo del Formulario Familiar */
+        .registro-box { background: #e8f0fe; padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 1px solid #d0e1fd; }
+        .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
+        .input-group { display: flex; flex-direction: column; gap: 4px; }
+        label { font-size: 12px; font-weight: bold; color: #555; }
+        input, select { padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
         
-        .area-hijos { background: #f9f9f9; padding: 15px; border-radius: 8px; margin-top: 10px; border: 1px dashed #bbb; }
-        .hijo-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-end; }
+        .hijos-area { background: #fff; padding: 15px; border-radius: 6px; border: 1px dashed #abc; margin-top: 10px; }
+        .hijo-row { display: flex; gap: 10px; margin-bottom: 8px; align-items: flex-end; }
         
-        .btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .btn-add { background: #34a853; color: white; margin-top: 10px; }
+        .btn { padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-add { background: #34a853; color: white; margin-top: 10px; font-size: 13px; }
         .btn-save { background: #1a73e8; color: white; width: 100%; margin-top: 20px; font-size: 16px; }
+        .btn-save:hover { background: #1557b0; }
+
+        /* EL SEMÁFORO (Estilo Anterior) */
+        .card { background: #fff; padding: 15px 20px; margin-bottom: 12px; border-left: 8px solid #ccc; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
         
-        /* Dashboard */
-        .card { background: white; border: 1px solid #eee; border-left: 6px solid #ccc; padding: 15px; margin-bottom: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .card.verde { border-left-color: #34a853; }
-        .card.rojo { border-left-color: #ea4335; }
-        .info-p { font-size: 14px; color: #555; margin: 2px 0; }
-        .status-badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; color: white; font-weight: bold; }
+        /* Colores del Semáforo */
+        .card.verde { border-left-color: #34a853; }    /* Activo */
+        .card.amarillo { border-left-color: #fbbc04; } /* En Riesgo */
+        .card.rojo { border-left-color: #ea4335; }     /* Perdido / Vencido */
+
+        .info-piloto { display: flex; flex-direction: column; gap: 3px; }
+        .nombre-p { font-size: 18px; font-weight: bold; color: #111; }
+        .detalle-p { font-size: 14px; color: #666; }
+        .alerta-p { font-size: 13px; font-weight: bold; color: #ea4335; }
+
+        .btn-checkin { background: #34a853; color: white; padding: 12px 20px; font-size: 14px; }
+        .btn-checkin:hover { background: #2d8f47; }
         
-        .notificacion-toast { position: fixed; bottom: 20px; right: 20px; background: #333; color: white; padding: 15px 25px; border-radius: 8px; display: none; z-index: 1000; }
+        .toast { position: fixed; bottom: 20px; right: 20px; background: #333; color: white; padding: 12px 20px; border-radius: 8px; display: none; z-index: 100; }
     </style>
 </head>
 <body>
 
-<div id="toast" class="notificacion-toast">Simulando envío de correo...</div>
+<div id="toast" class="toast">Mensaje de sistema</div>
 
 <div class="container">
-    <h1>W1 BMX Club - Registro Centralizado</h1>
+    <h1>W1 BMX Club</h1>
+    <h2>Panel de Control - Fase 1</h2>
 
-    <div class="seccion-registro">
-        <h3 style="margin-top:0;">1. Datos del Responsable (Padre/Madre)</h3>
-        <div class="grid-responsable">
+    <div class="registro-box">
+        <h3 style="margin-top:0; font-size: 16px;">Registro del Responsable y Alumnos</h3>
+        <div class="grid-form">
             <div class="input-group">
-                <label>Nombre Completo</label>
-                <input type="text" id="respNombre" placeholder="Ej. Juan Pérez">
+                <label>Nombre del Padre/Madre</label>
+                <input type="text" id="respNombre" placeholder="Juan Pérez">
             </div>
             <div class="input-group">
-                <label>Cédula / ID</label>
-                <input type="text" id="respCedula" placeholder="12345678">
+                <label>Email Notificaciones</label>
+                <input type="email" id="respEmail" placeholder="correo@ejemplo.com">
             </div>
             <div class="input-group">
-                <label>Teléfono (WhatsApp)</label>
-                <input type="text" id="respTel" placeholder="+57 300...">
+                <label>Teléfono WhatsApp</label>
+                <input type="text" id="respTel" placeholder="300...">
             </div>
             <div class="input-group">
-                <label>Email para Notificaciones</label>
-                <input type="email" id="respEmail" placeholder="juan@email.com">
+                <label>Cédula</label>
+                <input type="text" id="respCedula" placeholder="123456...">
             </div>
         </div>
 
-        <h3>2. Alumnos a Inscribir</h3>
-        <div id="contenedorHijos" class="area-hijos">
+        <div id="listaHijosInput" class="hijos-area">
             <div class="hijo-row">
                 <div class="input-group" style="flex:2;">
-                    <label>Nombre del Alumno (Hijo/a o Usted mismo)</label>
-                    <input type="text" class="hijo-nombre" placeholder="Nombre del piloto">
+                    <label>Nombre del Piloto (Hijo/a)</label>
+                    <input type="text" class="h-nombre" placeholder="Nombre del niño">
                 </div>
                 <div class="input-group" style="flex:1;">
-                    <label>Paquete Inicial</label>
-                    <select class="hijo-paquete">
-                        <option value="1">Clase Individual</option>
-                        <option value="4">Paquete x4</option>
-                        <option value="8" selected>Paquete x8</option>
-                        <option value="12">Paquete x12</option>
+                    <label>Paquete</label>
+                    <select class="h-paquete">
+                        <option value="1">Individual</option>
+                        <option value="4">x4 Clases</option>
+                        <option value="8" selected>x8 Clases</option>
+                        <option value="12">x12 Clases</option>
                     </select>
                 </div>
             </div>
         </div>
-        <button type="button" class="btn btn-add" id="btnAddHijo">+ Añadir otro Alumno</button>
-        
-        <button type="button" class="btn btn-save" id="btnGuardarTodo">Finalizar Registro y Notificar</button>
+        <button class="btn btn-add" id="btnAddHijo">+ Agregar otro piloto</button>
+        <button class="btn btn-save" id="btnGuardar">Guardar y Enviar Bienvenida</button>
     </div>
 
-    <hr>
+    <div style="border-bottom: 2px solid #eee; margin-bottom: 15px; padding-bottom: 5px; display: flex; justify-content: space-between;">
+        <h3 style="margin:0;">Listado de Pilotos</h3>
+        <div style="font-size: 12px; font-weight: bold;">
+            <span style="color:#34a853;">● Activo</span> | 
+            <span style="color:#fbbc04;">● Riesgo</span> | 
+            <span style="color:#ea4335;">● Vencido</span>
+        </div>
+    </div>
 
-    <h2>Panel Operativo (Pilotos Activos)</h2>
-    <div id="lista-pilotos">Cargando datos...</div>
+    <div id="dashboard">Cargando...</div>
+
+    <div style="text-align:center; margin-top:40px; font-size:12px; color:#aaa;">
+        Powered by Ailligence
+    </div>
 </div>
 
 <script type="module">
@@ -105,115 +124,118 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const pilotosRef = collection(db, "pilotos_v2"); // Nueva versión para estructura familiar
+    const pilotosRef = collection(db, "pilotos_v2");
 
-    // Dinamismo: Añadir más filas de hijos
+    // Función para manejar el semáforo (Logic)
+    const obtenerClaseSemaforo = (clases, ultimaAsistencia) => {
+        const hoy = new Date();
+        const ultima = new Date(ultimaAsistencia);
+        const diasInactividad = Math.floor(Math.abs(hoy - ultima) / (1000 * 60 * 60 * 24));
+
+        if (clases === 0 || diasInactividad >= 30) return 'rojo';
+        if (clases <= 2 || diasInactividad >= 10) return 'amarillo';
+        return 'verde';
+    };
+
+    // Agregar filas de hijos dinámicamente
     document.getElementById('btnAddHijo').addEventListener('click', () => {
-        const div = document.createElement('div');
-        div.className = 'hijo-row';
-        div.innerHTML = `
+        const row = document.createElement('div');
+        row.className = 'hijo-row';
+        row.innerHTML = `
             <div class="input-group" style="flex:2;">
-                <input type="text" class="hijo-nombre" placeholder="Nombre del otro hijo">
+                <input type="text" class="h-nombre" placeholder="Nombre del otro piloto">
             </div>
             <div class="input-group" style="flex:1;">
-                <select class="hijo-paquete">
-                    <option value="1">Clase Individual</option>
-                    <option value="4">Paquete x4</option>
-                    <option value="8" selected>Paquete x8</option>
-                    <option value="12">Paquete x12</option>
+                <select class="h-paquete">
+                    <option value="1">Individual</option>
+                    <option value="4">x4</option>
+                    <option value="8" selected>x8</option>
+                    <option value="12">x12</option>
                 </select>
             </div>
         `;
-        document.getElementById('contenedorHijos').appendChild(div);
+        document.getElementById('listaHijosInput').appendChild(row);
     });
 
-    // Guardar TODO el grupo familiar
-    document.getElementById('btnGuardarTodo').addEventListener('click', async () => {
+    // Guardar en Firebase
+    document.getElementById('btnGuardar').addEventListener('click', async () => {
         const resp = {
             nombre: document.getElementById('respNombre').value,
-            cedula: document.getElementById('respCedula').value,
+            email: document.getElementById('respEmail').value,
             tel: document.getElementById('respTel').value,
-            email: document.getElementById('respEmail').value
+            cedula: document.getElementById('respCedula').value
         };
 
-        if(!resp.nombre || !resp.email) return alert("Por favor completa los datos del responsable");
+        if(!resp.nombre || !resp.email) return alert("Completa los datos del responsable");
 
-        const hijosNombres = document.querySelectorAll('.hijo-nombre');
-        const hijosPaquetes = document.querySelectorAll('.hijo-paquete');
+        const nombresH = document.querySelectorAll('.h-nombre');
+        const paquetesH = document.querySelectorAll('.h-paquete');
 
-        document.getElementById('btnGuardarTodo').innerText = "Procesando...";
-
-        for(let i=0; i < hijosNombres.length; i++) {
-            const nombreHijo = hijosNombres[i].value.trim();
-            if(nombreHijo !== "") {
+        for(let i=0; i < nombresH.length; i++) {
+            const nom = nombresH[i].value.trim();
+            if(nom !== "") {
                 await addDoc(pilotosRef, {
-                    alumno: nombreHijo,
-                    responsable_nombre: resp.nombre,
-                    responsable_email: resp.email,
-                    responsable_tel: resp.tel,
-                    responsable_cedula: resp.cedula,
-                    clases_restantes: parseInt(hijosPaquetes[i].value),
-                    paquete_tipo: hijosPaquetes[i].value,
+                    alumno: nom,
+                    responsable: resp.nombre,
+                    email: resp.email,
+                    clases_restantes: parseInt(paquetesH[i].value),
                     ultima_asistencia: new Date().toISOString()
                 });
             }
         }
 
-        // Simulación de notificación
-        const toast = document.getElementById('toast');
-        toast.innerText = `📧 Correo de bienvenida enviado a: ${resp.email}`;
-        toast.style.display = 'block';
-        setTimeout(() => toast.style.display = 'none', 5000);
-
-        // Reset
+        showToast(`📧 Notificación de bienvenida enviada a ${resp.email}`);
         document.getElementById('respNombre').value = "";
-        document.getElementById('respCedula').value = "";
-        document.getElementById('contenedorHijos').innerHTML = `<div class="hijo-row"><div class="input-group" style="flex:2;"><label>Nombre del Alumno</label><input type="text" class="hijo-nombre"></div><div class="input-group" style="flex:1;"><label>Paquete</label><select class="hijo-paquete"><option value="1">Individual</option><option value="4">x4</option><option value="8" selected>x8</option><option value="12">x12</option></select></div></div>`;
-        document.getElementById('btnGuardarTodo').innerText = "Finalizar Registro y Notificar";
+        document.getElementById('respEmail').value = "";
     });
 
-    // Dashboard en tiempo real
+    // Leer Dashboard en Tiempo Real
     onSnapshot(pilotosRef, (snapshot) => {
-        const lista = document.getElementById('lista-pilotos');
-        lista.innerHTML = '';
+        const container = document.getElementById('dashboard');
+        container.innerHTML = '';
         
         snapshot.forEach(docSnap => {
-            const d = docSnap.data();
+            const p = docSnap.data();
             const id = docSnap.id;
-            const colorClass = d.clases_restantes > 2 ? 'verde' : 'rojo';
-
-            const div = document.createElement('div');
-            div.className = `card ${colorClass}`;
-            div.innerHTML = `
-                <div>
-                    <div style="font-weight:bold; font-size:16px;">${d.alumno}</div>
-                    <div class="info-p">Responsable: ${d.responsable_nombre}</div>
-                    <div class="info-p">📧 ${d.responsable_email} | 📱 ${d.responsable_tel}</div>
+            const semaforo = obtenerClaseSemaforo(p.clases_restantes, p.ultima_asistencia);
+            
+            const card = document.createElement('div');
+            card.className = `card ${semaforo}`;
+            card.innerHTML = `
+                <div class="info-piloto">
+                    <span class="nombre-p">${p.alumno}</span>
+                    <span class="detalle-p">Padre: ${p.responsable} | Saldo: <strong>${p.clases_restantes} clases</strong></span>
+                    ${semaforo === 'rojo' ? '<span class="alerta-p">⚠️ REQUIERE RENOVACIÓN</span>' : ''}
+                    ${semaforo === 'amarillo' ? '<span class="alerta-p">⚠️ SALDO BAJO / INACTIVO</span>' : ''}
                 </div>
-                <div style="text-align:right;">
-                    <div style="font-size:20px; font-weight:bold;">${d.clases_restantes} <small style="font-size:10px;">clases</small></div>
-                    <button class="btn" style="background:#eee; font-size:11px;" onclick="window.checkin('${id}', ${d.clases_restantes}, '${d.responsable_email}')">
-                        Hacer Check-in
-                    </button>
-                </div>
+                <button class="btn btn-checkin" onclick="window.hacerCheckin('${id}', ${p.clases_restantes})">
+                    Check-in
+                </button>
             `;
-            lista.appendChild(div);
+            container.appendChild(card);
         });
     });
 
-    // Función Global para Check-in
-    window.checkin = async (id, actual, email) => {
+    // Función Global Check-in
+    window.hacerCheckin = async (id, actual) => {
         if(actual > 0) {
-            await updateDoc(doc(db, "pilotos_v2", id), { clases_restantes: actual - 1 });
-            const toast = document.getElementById('toast');
-            toast.innerText = `✅ Check-in exitoso. Notificación enviada a ${email}`;
-            toast.style.display = 'block';
-            setTimeout(() => toast.style.display = 'none', 3000);
+            await updateDoc(doc(db, "pilotos_v2", id), { 
+                clases_restantes: actual - 1,
+                ultima_asistencia: new Date().toISOString()
+            });
+            showToast("✅ Clase descontada y asistencia registrada.");
         } else {
-            alert("Sin saldo. El responsable debe renovar el paquete.");
+            alert("No tiene clases disponibles. Debe pagar un nuevo paquete.");
         }
     };
 
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.innerText = msg;
+        t.style.display = 'block';
+        setTimeout(() => t.style.display = 'none', 3000);
+    }
 </script>
+
 </body>
 </html>
