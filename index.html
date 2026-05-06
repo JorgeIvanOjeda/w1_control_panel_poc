@@ -10,8 +10,8 @@
         h1, h2 { text-align: center; color: #1a73e8; }
         
         /* DASHBOARD GERENCIAL */
-        .dash-container { display: flex; gap: 15px; margin-bottom: 20px; text-align: center; }
-        .dash-card { flex: 1; padding: 15px; border-radius: 8px; background: #fff; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .dash-container { display: flex; gap: 15px; margin-bottom: 20px; text-align: center; flex-wrap: wrap; }
+        .dash-card { flex: 1; min-width: 200px; padding: 15px; border-radius: 8px; background: #fff; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .dash-card h4 { margin: 0 0 10px 0; font-size: 14px; color: #666; }
         .dash-card .numero { font-size: 28px; font-weight: bold; }
         .num-verde { color: #34a853; }
@@ -25,29 +25,32 @@
         .registro-box { background: #e8f0fe; padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 1px solid #d0e1fd; }
         .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
         .input-group { display: flex; flex-direction: column; gap: 4px; }
+        .col-span-2 { grid-column: span 2; }
         label { font-size: 12px; font-weight: bold; color: #555; }
         input, select { padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
         
         .hijos-area { background: #fff; padding: 15px; border-radius: 6px; border: 1px dashed #abc; margin-top: 10px; }
-        .hijo-row { display: flex; gap: 10px; margin-bottom: 8px; align-items: flex-end; }
+        .hijo-row { display: flex; gap: 10px; margin-bottom: 8px; align-items: flex-end; flex-wrap: wrap;}
         
         .btn { padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .btn-add { background: #34a853; color: white; margin-top: 10px; font-size: 13px; }
         .btn-save { background: #1a73e8; color: white; width: 100%; margin-top: 20px; font-size: 16px; }
+        .btn-save:hover { background: #1557b0; }
 
         /* SEMÁFORO TARJETAS */
-        .card { background: #fff; padding: 15px 20px; margin-bottom: 12px; border-left: 8px solid #ccc; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
+        .card { background: #fff; padding: 15px 20px; margin-bottom: 12px; border-left: 8px solid #ccc; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;}
         .card.verde { border-left-color: #34a853; }    
         .card.amarillo { border-left-color: #fbbc04; } 
         .card.rojo { border-left-color: #ea4335; }     
 
-        .info-piloto { display: flex; flex-direction: column; gap: 3px; }
+        .info-piloto { display: flex; flex-direction: column; gap: 4px; }
         .nombre-p { font-size: 18px; font-weight: bold; color: #111; }
-        .detalle-p { font-size: 14px; color: #666; }
+        .detalle-p { font-size: 13px; color: #555; }
         .alerta-p { font-size: 13px; font-weight: bold; color: #ea4335; }
 
+        .acciones { display: flex; gap: 8px; }
         .btn-checkin { background: #34a853; color: white; padding: 10px 15px; font-size: 14px; }
-        .btn-renovar { background: #1a73e8; color: white; padding: 10px 15px; font-size: 14px; margin-left: 5px;}
+        .btn-renovar { background: #1a73e8; color: white; padding: 10px 15px; font-size: 14px;}
         
         .toast { position: fixed; bottom: 20px; right: 20px; background: #333; color: white; padding: 12px 20px; border-radius: 8px; display: none; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.2);}
     </style>
@@ -86,10 +89,14 @@
         <h3 style="margin-top:0; font-size: 16px;">Nuevo Registro Familiar</h3>
         <div class="grid-form">
             <div class="input-group">
-                <label>Responsable</label>
-                <input type="text" id="respNombre" placeholder="Nombre">
+                <label>Responsable (Nombre)</label>
+                <input type="text" id="respNombre" placeholder="Nombre completo">
             </div>
             <div class="input-group">
+                <label>Teléfono (WhatsApp)</label>
+                <input type="text" id="respTel" placeholder="Ej: 3001234567">
+            </div>
+            <div class="input-group col-span-2">
                 <label>Email</label>
                 <input type="email" id="respEmail" placeholder="correo@ejemplo.com">
             </div>
@@ -97,8 +104,12 @@
 
         <div id="listaHijosInput" class="hijos-area">
             <div class="hijo-row">
-                <div class="input-group" style="flex:2;"><label>Piloto</label><input type="text" class="h-nombre"></div>
-                <div class="input-group" style="flex:1;"><label>Paquete</label>
+                <div class="input-group" style="flex:2; min-width: 200px;">
+                    <label>Piloto</label>
+                    <input type="text" class="h-nombre" placeholder="Nombre del alumno">
+                </div>
+                <div class="input-group" style="flex:1; min-width: 150px;">
+                    <label>Paquete</label>
                     <select class="h-paquete">
                         <option value="1">Individual</option>
                         <option value="4">x4 Clases</option>
@@ -146,31 +157,77 @@
     document.getElementById('btnAddHijo').addEventListener('click', () => {
         const row = document.createElement('div');
         row.className = 'hijo-row';
-        row.innerHTML = `<div class="input-group" style="flex:2;"><input type="text" class="h-nombre"></div><div class="input-group" style="flex:1;"><select class="h-paquete"><option value="1">Individual</option><option value="4">x4</option><option value="8" selected>x8</option><option value="12">x12</option></select></div>`;
+        row.innerHTML = `
+            <div class="input-group" style="flex:2; min-width: 200px;">
+                <input type="text" class="h-nombre" placeholder="Nombre del alumno">
+            </div>
+            <div class="input-group" style="flex:1; min-width: 150px;">
+                <select class="h-paquete">
+                    <option value="1">Individual</option>
+                    <option value="4">x4</option>
+                    <option value="8" selected>x8</option>
+                    <option value="12">x12</option>
+                </select>
+            </div>`;
         document.getElementById('listaHijosInput').appendChild(row);
     });
 
     document.getElementById('btnGuardar').addEventListener('click', async () => {
         const respNombre = document.getElementById('respNombre').value;
+        const respTel = document.getElementById('respTel').value;
         const respEmail = document.getElementById('respEmail').value;
-        if(!respNombre) return alert("Ingresa el nombre del responsable");
+        
+        if(!respNombre || !respTel) return alert("Por favor ingresa el nombre y el teléfono WhatsApp del responsable");
 
         const nombresH = document.querySelectorAll('.h-nombre');
         const paquetesH = document.querySelectorAll('.h-paquete');
+        let guardados = 0;
+
+        document.getElementById('btnGuardar').innerText = "Guardando...";
+        document.getElementById('btnGuardar').disabled = true;
 
         for(let i=0; i < nombresH.length; i++) {
             if(nombresH[i].value.trim() !== "") {
                 await addDoc(pilotosRef, {
                     alumno: nombresH[i].value.trim(),
                     responsable: respNombre,
+                    telefono: respTel,
                     email: respEmail,
                     clases_restantes: parseInt(paquetesH[i].value),
                     ultima_asistencia: new Date().toISOString()
                 });
+                guardados++;
             }
         }
-        showToast("✅ Familia registrada exitosamente");
-        document.getElementById('respNombre').value = "";
+        
+        if(guardados > 0) {
+            showToast("✅ Familia registrada exitosamente");
+            document.getElementById('respNombre').value = "";
+            document.getElementById('respTel').value = "";
+            document.getElementById('respEmail').value = "";
+            // Limpiar los hijos extra
+            document.getElementById('listaHijosInput').innerHTML = `
+            <div class="hijo-row">
+                <div class="input-group" style="flex:2; min-width: 200px;">
+                    <label>Piloto</label>
+                    <input type="text" class="h-nombre" placeholder="Nombre del alumno">
+                </div>
+                <div class="input-group" style="flex:1; min-width: 150px;">
+                    <label>Paquete</label>
+                    <select class="h-paquete">
+                        <option value="1">Individual</option>
+                        <option value="4">x4 Clases</option>
+                        <option value="8" selected>x8 Clases</option>
+                        <option value="12">x12 Clases</option>
+                    </select>
+                </div>
+            </div>`;
+        } else {
+            alert("Debes ingresar al menos el nombre de un piloto.");
+        }
+        
+        document.getElementById('btnGuardar').innerText = "Guardar Registro";
+        document.getElementById('btnGuardar').disabled = false;
     });
 
     onSnapshot(pilotosRef, (snapshot) => {
@@ -186,16 +243,20 @@
             
             conteo[estado.color]++;
             
+            // Si el teléfono no existe (por registros viejos), mostrar un guión
+            const telefonoVisual = p.telefono ? p.telefono : 'No registrado';
+            
             const card = document.createElement('div');
             card.className = `card ${estado.color}`;
             card.innerHTML = `
                 <div class="info-piloto">
                     <span class="nombre-p">${p.alumno}</span>
-                    <span class="detalle-p">Padre: ${p.responsable} | Saldo: <strong>${p.clases_restantes} clases</strong></span>
+                    <span class="detalle-p">Resp: <strong>${p.responsable}</strong> | 📱 ${telefonoVisual}</span>
+                    <span class="detalle-p">Saldo: <strong>${p.clases_restantes} clases</strong></span>
                     ${estado.color === 'rojo' ? '<span class="alerta-p">⚠️ SIN SALDO O INACTIVO MÁS DE 30 DÍAS</span>' : ''}
                     ${estado.color === 'amarillo' ? '<span class="alerta-p">⚠️ ATENCIÓN: Pocas clases o inactivo</span>' : ''}
                 </div>
-                <div>
+                <div class="acciones">
                     <button class="btn btn-checkin" onclick="window.hacerCheckin('${id}', ${p.clases_restantes})">Check-in</button>
                     ${estado.color === 'rojo' ? `<button class="btn btn-renovar" onclick="window.renovar('${id}', '${p.alumno}')">Recargar</button>` : ''}
                 </div>
@@ -211,9 +272,9 @@
         // Generar Resumen IA simulado
         const textoIA = document.getElementById('ai-text');
         if (conteo.rojo > 0) {
-            textoIA.innerHTML = `<strong>Ailligence Insights:</strong> Tienes ${conteo.rojo} piloto(s) sin saldo o perdidos. ¡Ofrece una recarga ahora mismo!`;
+            textoIA.innerHTML = `<strong>Ailligence Insights:</strong> Tienes ${conteo.rojo} piloto(s) sin saldo o perdidos. Aprovecha para enviar un mensaje de WhatsApp ahora.`;
         } else if (conteo.amarillo > 0) {
-            textoIA.innerHTML = `<strong>Ailligence Insights:</strong> ${conteo.amarillo} piloto(s) están a punto de agotar su paquete o bajar su ritmo. Buen momento para seguimientos.`;
+            textoIA.innerHTML = `<strong>Ailligence Insights:</strong> ${conteo.amarillo} piloto(s) están a punto de agotar su paquete o bajar su ritmo. Buen momento para un recordatorio por WhatsApp.`;
         } else {
             textoIA.innerHTML = `<strong>Ailligence Insights:</strong> ¡Excelente! Todos tus pilotos están activos y al día con sus paquetes.`;
         }
