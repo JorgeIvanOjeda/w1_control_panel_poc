@@ -3,35 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PoC - W1 BMX Club</title>
+    <title>PoC Completa - W1 BMX Club</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 650px; margin: auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
         h1 { color: #1a73e8; text-align: center; margin-bottom: 5px; }
         h2 { color: #666; text-align: center; font-size: 16px; margin-top: 0; margin-bottom: 30px; font-weight: normal; }
-        .form-group { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        input, select, button { padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
+        
+        /* Formulario */
+        .modulo-registro { background: #e8f0fe; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
+        .form-group { display: flex; gap: 10px; flex-wrap: wrap; align-items: center;}
+        input, select, button { padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
         input { flex: 1; min-width: 200px; }
-        button { background-color: #1a73e8; color: white; border: none; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        button:hover { background-color: #1557b0; }
-        .card { background: #fff; padding: 15px 20px; margin-bottom: 15px; border-left: 5px solid #1a73e8; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
-        .info-piloto { display: flex; flex-direction: column; gap: 5px; }
-        .nombre { font-size: 18px; font-weight: bold; }
-        .clases { font-size: 15px; color: #555; }
-        .alerta { color: #d93025; font-weight: bold; }
-        .btn-descontar { background-color: #34a853; padding: 10px 15px; }
-        .btn-descontar:hover { background-color: #2d8f47; }
+        .btn-primary { background-color: #1a73e8; color: white; border: none; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-primary:hover { background-color: #1557b0; }
+        
+        /* Tarjetas de Pilotos */
+        .card { background: #fff; padding: 15px 20px; margin-bottom: 15px; border: 1px solid #eee; border-left: 6px solid #ccc; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;}
+        
+        /* Semáforo de colores */
+        .card.verde { border-left-color: #34a853; } /* Activo */
+        .card.amarillo { border-left-color: #fbbc04; } /* En Riesgo */
+        .card.rojo { border-left-color: #ea4335; } /* Perdido / Vencido */
+        
+        .info-piloto { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 250px;}
+        .nombre { font-size: 18px; font-weight: bold; display: flex; align-items: center; gap: 10px;}
+        .badge { font-size: 11px; padding: 3px 8px; border-radius: 12px; font-weight: bold; color: white; text-transform: uppercase;}
+        .badge.verde { background: #34a853; }
+        .badge.amarillo { background: #fbbc04; }
+        .badge.rojo { background: #ea4335; }
+        
+        .detalles { font-size: 14px; color: #555; }
+        .alerta-texto { color: #ea4335; font-weight: bold; font-size: 13px;}
+        
+        /* Botones de acción */
+        .acciones { display: flex; gap: 10px; }
+        .btn-checkin { background-color: #fbbc04; color: #333; font-weight: bold; border: none;}
+        .btn-checkin:hover { background-color: #e0a800; }
+        .btn-pago { background-color: #34a853; color: white; font-weight: bold; border: none;}
+        .btn-pago:hover { background-color: #28a745; }
+        
         .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #888; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>W1 BMX Club</h1>
-    <h2>Control de Pagos y Clases - Fase 1</h2>
+    <h1>W1 BMX Club - Dashboard</h1>
+    <h2>PoC: Control de Pagos y Scoring de Riesgo IA (Fases 1 y 2)</h2>
     
-    <div style="background: #e8f0fe; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
-        <h3 style="margin-top: 0; color: #1a73e8;">Registrar Nuevo Piloto</h3>
+    <div class="modulo-registro">
+        <h3 style="margin-top: 0; color: #1a73e8; font-size: 16px;">Registrar Nuevo Piloto / Venta Inicial</h3>
         <div class="form-group">
             <input type="text" id="nombreInput" placeholder="Ej. Mariana Pajón">
             <select id="paqueteInput">
@@ -40,11 +62,19 @@
                 <option value="8">Paquete x8 clases</option>
                 <option value="12">Paquete x12 clases</option>
             </select>
-            <button id="btnAgregar">Guardar Piloto</button>
+            <button id="btnAgregar" class="btn-primary">Registrar y Cobrar</button>
         </div>
     </div>
 
-    <h3 style="border-bottom: 2px solid #f0f2f5; padding-bottom: 10px;">Pilotos Activos</h3>
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #f0f2f5; padding-bottom: 10px; margin-bottom: 15px;">
+        <h3 style="margin: 0;">Panel Operativo en Tiempo Real</h3>
+        <div style="font-size: 12px; color: #666; display: flex; gap: 15px;">
+            <span style="color: #34a853; font-weight:bold;">🟢 Activos</span>
+            <span style="color: #fbbc04; font-weight:bold;">🟡 En Riesgo (>10 días o saldo bajo)</span>
+            <span style="color: #ea4335; font-weight:bold;">🔴 Perdidos (Saldo 0 o >30 días)</span>
+        </div>
+    </div>
+
     <div id="lista-clientes">Cargando base de datos...</div>
 
     <div class="footer">
@@ -53,28 +83,22 @@
 </div>
 
 <script type="module">
-    // Importamos Firebase desde el CDN para que funcione directo en el navegador
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js";
 
-    // Configuración exacta del proyecto W1 BMX
+    // Reemplaza con tus credenciales reales
     const firebaseConfig = {
       apiKey: "AIzaSyCX8gmekHpSVtvMxsnbBV7-kxD4VZoS6XM",
       authDomain: "club-ciclismo-w1.firebaseapp.com",
       projectId: "club-ciclismo-w1",
       storageBucket: "club-ciclismo-w1.firebasestorage.app",
       messagingSenderId: "726347754629",
-      appId: "1:726347754629:web:19a0e8a76153ff14dfcdec",
-      measurementId: "G-T6T4M8YD51"
+      appId: "1:726347754629:web:19a0e8a76153ff14dfcdec"
     };
 
-    // Inicializamos Firebase
     const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
     const db = getFirestore(app);
 
-    // Conexión con el HTML
     const listaClientes = document.getElementById('lista-clientes');
     const btnAgregar = document.getElementById('btnAgregar');
     const nombreInput = document.getElementById('nombreInput');
@@ -82,11 +106,20 @@
 
     const paquetesRef = collection(db, "pilotos");
 
+    // Función auxiliar para calcular días desde una fecha
+    const calcularDias = (fechaIsoString) => {
+        if (!fechaIsoString) return 0;
+        const fecha = new Date(fechaIsoString);
+        const hoy = new Date();
+        const diffTiempo = Math.abs(hoy - fecha);
+        return Math.floor(diffTiempo / (1000 * 60 * 60 * 24));
+    };
+
     // Lector en Tiempo Real
     onSnapshot(paquetesRef, (snapshot) => {
         listaClientes.innerHTML = '';
         if (snapshot.empty) {
-            listaClientes.innerHTML = '<p style="color: #666; text-align: center;">No hay pilotos en el sistema. Registra el primero arriba.</p>';
+            listaClientes.innerHTML = '<p style="color: #666; text-align: center;">No hay pilotos en el sistema.</p>';
             return;
         }
 
@@ -94,37 +127,88 @@
             const data = documento.data();
             const id = documento.id;
             
-            // Lógica de alerta si quedan 2 clases o menos
-            const esAlerta = data.clases_restantes <= 2 && data.paquete_inicial > 1;
-            
+            const diasInactividad = calcularDias(data.ultima_asistencia);
+            let semaforo = 'verde'; // Por defecto Activo
+            let etiqueta = 'ACTIVO';
+            let mensajeIA = '';
+
+            // Lógica del Scoring de Riesgo IA (Fase 2)
+            if (data.clases_restantes === 0 || diasInactividad >= 30) {
+                semaforo = 'rojo';
+                etiqueta = 'PERDIDO / VENCIDO';
+                mensajeIA = '⚠️ Acción: Enviar oferta de reactivación 20% descuento.';
+            } else if (data.clases_restantes <= 2 || diasInactividad >= 10) {
+                semaforo = 'amarillo';
+                etiqueta = 'EN RIESGO';
+                mensajeIA = '⚠️ Alerta: Paquete por vencer o inactividad prolongada.';
+            }
+
+            const textoAsistencia = diasInactividad === 0 ? 'Hoy' : `Hace ${diasInactividad} días`;
+
             const div = document.createElement('div');
-            div.className = 'card';
+            div.className = `card ${semaforo}`;
             div.innerHTML = `
                 <div class="info-piloto">
-                    <span class="nombre">${data.nombre}</span>
-                    <span class="clases ${esAlerta ? 'alerta' : ''}">
-                        Saldo: ${data.clases_restantes} clases ${esAlerta ? '⚠️ (Próximo a renovar)' : ''}
-                    </span>
+                    <div class="nombre">
+                        ${data.nombre} 
+                        <span class="badge ${semaforo}">${etiqueta}</span>
+                    </div>
+                    <div class="detalles">
+                        <strong>Saldo:</strong> ${data.clases_restantes} clases restantes (Paquete x${data.paquete_inicial}) <br>
+                        <strong>Última clase:</strong> ${textoAsistencia} 
+                    </div>
+                    ${mensajeIA ? `<span class="alerta-texto">${mensajeIA}</span>` : ''}
                 </div>
-                <button class="btn-descontar" data-id="${id}" data-clases="${data.clases_restantes}">
-                    Check-in (Descontar)
-                </button>
+                <div class="acciones">
+                    <button class="btn-checkin" data-id="${id}" data-clases="${data.clases_restantes}">
+                        Check-in
+                    </button>
+                    <button class="btn-pago" data-id="${id}" data-nombre="${data.nombre}">
+                        Registrar Pago
+                    </button>
+                </div>
             `;
             listaClientes.appendChild(div);
         });
 
-        // Eventos para descontar clases
-        document.querySelectorAll('.btn-descontar').forEach(boton => {
+        // Eventos para descontar clases (Check-in)
+        document.querySelectorAll('.btn-checkin').forEach(boton => {
             boton.addEventListener('click', async (e) => {
                 const id = e.target.getAttribute('data-id');
                 const clases = parseInt(e.target.getAttribute('data-clases'));
                 
                 if(clases > 0) {
+                    // Actualiza saldo y la fecha de última asistencia
                     await updateDoc(doc(db, "pilotos", id), { 
-                        clases_restantes: clases - 1 
+                        clases_restantes: clases - 1,
+                        ultima_asistencia: new Date().toISOString()
                     });
                 } else {
-                    alert('El saldo está en cero. El piloto debe adquirir un nuevo paquete o clase.');
+                    alert('El saldo está en cero. Registre un nuevo pago primero.');
+                }
+            });
+        });
+
+        // Eventos para registrar nuevos pagos (Renovación)
+        document.querySelectorAll('.btn-pago').forEach(boton => {
+            boton.addEventListener('click', async (e) => {
+                const id = e.target.getAttribute('data-id');
+                const nombre = e.target.getAttribute('data-nombre');
+                
+                // Simulación rápida de un menú de cobro
+                const nuevoPaquete = prompt(`¿Qué paquete está pagando ${nombre}?\n(Ingrese 1, 4, 8 o 12)`);
+                const clasesNuevas = parseInt(nuevoPaquete);
+
+                if([1, 4, 8, 12].includes(clasesNuevas)) {
+                    await updateDoc(doc(db, "pilotos", id), { 
+                        clases_restantes: clasesNuevas,
+                        paquete_inicial: clasesNuevas,
+                        fecha_ultimo_pago: new Date().toISOString()
+                        // Nota: La inactividad no se resetea al pagar, solo al asistir.
+                    });
+                    alert(`Pago registrado exitosamente. Se recargaron ${clasesNuevas} clases.`);
+                } else if(nuevoPaquete !== null) {
+                    alert('Paquete inválido. Ingrese 1, 4, 8 o 12.');
                 }
             });
         });
@@ -141,23 +225,25 @@
         }
 
         btnAgregar.disabled = true;
-        btnAgregar.innerText = 'Guardando...';
+        btnAgregar.innerText = 'Cobrando...';
 
         try {
             await addDoc(paquetesRef, {
                 nombre: nombre,
                 clases_restantes: clases,
                 paquete_inicial: clases,
-                fecha_registro: new Date().toISOString()
+                fecha_registro: new Date().toISOString(),
+                fecha_ultimo_pago: new Date().toISOString(),
+                ultima_asistencia: new Date().toISOString() // Asumimos que si se inscribe hoy, asiste hoy
             });
             nombreInput.value = '';
         } catch (error) {
-            console.error("Error agregando documento: ", error);
-            alert("Hubo un error al guardar. Revisa la consola.");
+            console.error(error);
+            alert("Error al guardar.");
         }
 
         btnAgregar.disabled = false;
-        btnAgregar.innerText = 'Guardar Piloto';
+        btnAgregar.innerText = 'Registrar y Cobrar';
     });
 </script>
 
