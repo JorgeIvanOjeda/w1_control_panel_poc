@@ -3,13 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>W1 BMX Club - Control de Clases</title>
+    <title>W1 BMX Club - PoC Dashboard</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .container { max-width: 850px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         h1, h2 { text-align: center; color: #1a73e8; }
         
-        /* Estilo del Formulario Familiar */
+        /* DASHBOARD GERENCIAL */
+        .dash-container { display: flex; gap: 15px; margin-bottom: 20px; text-align: center; }
+        .dash-card { flex: 1; padding: 15px; border-radius: 8px; background: #fff; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .dash-card h4 { margin: 0 0 10px 0; font-size: 14px; color: #666; }
+        .dash-card .numero { font-size: 28px; font-weight: bold; }
+        .num-verde { color: #34a853; }
+        .num-amarillo { color: #fbbc04; }
+        .num-rojo { color: #ea4335; }
+        
+        /* RESUMEN IA */
+        .ai-summary { background: #f4f8ff; border-left: 4px solid #1a73e8; padding: 15px; border-radius: 6px; margin-bottom: 30px; font-size: 14px; display: flex; gap: 10px; align-items: center; }
+
+        /* FORMULARIO */
         .registro-box { background: #e8f0fe; padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 1px solid #d0e1fd; }
         .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
         .input-group { display: flex; flex-direction: column; gap: 4px; }
@@ -22,64 +34,71 @@
         .btn { padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .btn-add { background: #34a853; color: white; margin-top: 10px; font-size: 13px; }
         .btn-save { background: #1a73e8; color: white; width: 100%; margin-top: 20px; font-size: 16px; }
-        .btn-save:hover { background: #1557b0; }
 
-        /* EL SEMÁFORO (Estilo Anterior) */
+        /* SEMÁFORO TARJETAS */
         .card { background: #fff; padding: 15px 20px; margin-bottom: 12px; border-left: 8px solid #ccc; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
-        
-        /* Colores del Semáforo */
-        .card.verde { border-left-color: #34a853; }    /* Activo */
-        .card.amarillo { border-left-color: #fbbc04; } /* En Riesgo */
-        .card.rojo { border-left-color: #ea4335; }     /* Perdido / Vencido */
+        .card.verde { border-left-color: #34a853; }    
+        .card.amarillo { border-left-color: #fbbc04; } 
+        .card.rojo { border-left-color: #ea4335; }     
 
         .info-piloto { display: flex; flex-direction: column; gap: 3px; }
         .nombre-p { font-size: 18px; font-weight: bold; color: #111; }
         .detalle-p { font-size: 14px; color: #666; }
         .alerta-p { font-size: 13px; font-weight: bold; color: #ea4335; }
 
-        .btn-checkin { background: #34a853; color: white; padding: 12px 20px; font-size: 14px; }
-        .btn-checkin:hover { background: #2d8f47; }
+        .btn-checkin { background: #34a853; color: white; padding: 10px 15px; font-size: 14px; }
+        .btn-renovar { background: #1a73e8; color: white; padding: 10px 15px; font-size: 14px; margin-left: 5px;}
         
-        .toast { position: fixed; bottom: 20px; right: 20px; background: #333; color: white; padding: 12px 20px; border-radius: 8px; display: none; z-index: 100; }
+        .toast { position: fixed; bottom: 20px; right: 20px; background: #333; color: white; padding: 12px 20px; border-radius: 8px; display: none; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.2);}
     </style>
 </head>
 <body>
 
-<div id="toast" class="toast">Mensaje de sistema</div>
+<div id="toast" class="toast">Mensaje</div>
 
 <div class="container">
     <h1>W1 BMX Club</h1>
-    <h2>Panel de Control - Fase 1</h2>
+    <h2>Panel Gerencial y Control Operativo</h2>
+
+    <div class="dash-container">
+        <div class="dash-card">
+            <h4>Pilotos Activos</h4>
+            <div id="count-activos" class="numero num-verde">0</div>
+        </div>
+        <div class="dash-card">
+            <h4>En Riesgo (Inactivos/Saldo Bajo)</h4>
+            <div id="count-riesgo" class="numero num-amarillo">0</div>
+        </div>
+        <div class="dash-card">
+            <h4>Perdidos / Vencidos</h4>
+            <div id="count-perdidos" class="numero num-rojo">0</div>
+        </div>
+    </div>
+
+    <div class="ai-summary">
+        <span style="font-size: 24px;">🤖</span>
+        <div id="ai-text">
+            <strong>Analizando base de datos...</strong>
+        </div>
+    </div>
 
     <div class="registro-box">
-        <h3 style="margin-top:0; font-size: 16px;">Registro del Responsable y Alumnos</h3>
+        <h3 style="margin-top:0; font-size: 16px;">Nuevo Registro Familiar</h3>
         <div class="grid-form">
             <div class="input-group">
-                <label>Nombre del Padre/Madre</label>
-                <input type="text" id="respNombre" placeholder="Juan Pérez">
+                <label>Responsable</label>
+                <input type="text" id="respNombre" placeholder="Nombre">
             </div>
             <div class="input-group">
-                <label>Email Notificaciones</label>
+                <label>Email</label>
                 <input type="email" id="respEmail" placeholder="correo@ejemplo.com">
-            </div>
-            <div class="input-group">
-                <label>Teléfono WhatsApp</label>
-                <input type="text" id="respTel" placeholder="300...">
-            </div>
-            <div class="input-group">
-                <label>Cédula</label>
-                <input type="text" id="respCedula" placeholder="123456...">
             </div>
         </div>
 
         <div id="listaHijosInput" class="hijos-area">
             <div class="hijo-row">
-                <div class="input-group" style="flex:2;">
-                    <label>Nombre del Piloto (Hijo/a)</label>
-                    <input type="text" class="h-nombre" placeholder="Nombre del niño">
-                </div>
-                <div class="input-group" style="flex:1;">
-                    <label>Paquete</label>
+                <div class="input-group" style="flex:2;"><label>Piloto</label><input type="text" class="h-nombre"></div>
+                <div class="input-group" style="flex:1;"><label>Paquete</label>
                     <select class="h-paquete">
                         <option value="1">Individual</option>
                         <option value="4">x4 Clases</option>
@@ -90,23 +109,11 @@
             </div>
         </div>
         <button class="btn btn-add" id="btnAddHijo">+ Agregar otro piloto</button>
-        <button class="btn btn-save" id="btnGuardar">Guardar y Enviar Bienvenida</button>
+        <button class="btn btn-save" id="btnGuardar">Guardar Registro</button>
     </div>
 
-    <div style="border-bottom: 2px solid #eee; margin-bottom: 15px; padding-bottom: 5px; display: flex; justify-content: space-between;">
-        <h3 style="margin:0;">Listado de Pilotos</h3>
-        <div style="font-size: 12px; font-weight: bold;">
-            <span style="color:#34a853;">● Activo</span> | 
-            <span style="color:#fbbc04;">● Riesgo</span> | 
-            <span style="color:#ea4335;">● Vencido</span>
-        </div>
-    </div>
-
-    <div id="dashboard">Cargando...</div>
-
-    <div style="text-align:center; margin-top:40px; font-size:12px; color:#aaa;">
-        Powered by Ailligence
-    </div>
+    <h3 style="border-bottom: 2px solid #eee; padding-bottom: 5px;">Listado de Pilotos</h3>
+    <div id="lista-pilotos">Cargando...</div>
 </div>
 
 <script type="module">
@@ -126,106 +133,106 @@
     const db = getFirestore(app);
     const pilotosRef = collection(db, "pilotos_v2");
 
-    // Función para manejar el semáforo (Logic)
-    const obtenerClaseSemaforo = (clases, ultimaAsistencia) => {
+    const obtenerEstado = (clases, ultimaAsistencia) => {
         const hoy = new Date();
         const ultima = new Date(ultimaAsistencia);
         const diasInactividad = Math.floor(Math.abs(hoy - ultima) / (1000 * 60 * 60 * 24));
 
-        if (clases === 0 || diasInactividad >= 30) return 'rojo';
-        if (clases <= 2 || diasInactividad >= 10) return 'amarillo';
-        return 'verde';
+        if (clases === 0 || diasInactividad >= 30) return { color: 'rojo', dias: diasInactividad };
+        if (clases <= 2 || diasInactividad >= 10) return { color: 'amarillo', dias: diasInactividad };
+        return { color: 'verde', dias: diasInactividad };
     };
 
-    // Agregar filas de hijos dinámicamente
     document.getElementById('btnAddHijo').addEventListener('click', () => {
         const row = document.createElement('div');
         row.className = 'hijo-row';
-        row.innerHTML = `
-            <div class="input-group" style="flex:2;">
-                <input type="text" class="h-nombre" placeholder="Nombre del otro piloto">
-            </div>
-            <div class="input-group" style="flex:1;">
-                <select class="h-paquete">
-                    <option value="1">Individual</option>
-                    <option value="4">x4</option>
-                    <option value="8" selected>x8</option>
-                    <option value="12">x12</option>
-                </select>
-            </div>
-        `;
+        row.innerHTML = `<div class="input-group" style="flex:2;"><input type="text" class="h-nombre"></div><div class="input-group" style="flex:1;"><select class="h-paquete"><option value="1">Individual</option><option value="4">x4</option><option value="8" selected>x8</option><option value="12">x12</option></select></div>`;
         document.getElementById('listaHijosInput').appendChild(row);
     });
 
-    // Guardar en Firebase
     document.getElementById('btnGuardar').addEventListener('click', async () => {
-        const resp = {
-            nombre: document.getElementById('respNombre').value,
-            email: document.getElementById('respEmail').value,
-            tel: document.getElementById('respTel').value,
-            cedula: document.getElementById('respCedula').value
-        };
-
-        if(!resp.nombre || !resp.email) return alert("Completa los datos del responsable");
+        const respNombre = document.getElementById('respNombre').value;
+        const respEmail = document.getElementById('respEmail').value;
+        if(!respNombre) return alert("Ingresa el nombre del responsable");
 
         const nombresH = document.querySelectorAll('.h-nombre');
         const paquetesH = document.querySelectorAll('.h-paquete');
 
         for(let i=0; i < nombresH.length; i++) {
-            const nom = nombresH[i].value.trim();
-            if(nom !== "") {
+            if(nombresH[i].value.trim() !== "") {
                 await addDoc(pilotosRef, {
-                    alumno: nom,
-                    responsable: resp.nombre,
-                    email: resp.email,
+                    alumno: nombresH[i].value.trim(),
+                    responsable: respNombre,
+                    email: respEmail,
                     clases_restantes: parseInt(paquetesH[i].value),
                     ultima_asistencia: new Date().toISOString()
                 });
             }
         }
-
-        showToast(`📧 Notificación de bienvenida enviada a ${resp.email}`);
+        showToast("✅ Familia registrada exitosamente");
         document.getElementById('respNombre').value = "";
-        document.getElementById('respEmail').value = "";
     });
 
-    // Leer Dashboard en Tiempo Real
     onSnapshot(pilotosRef, (snapshot) => {
-        const container = document.getElementById('dashboard');
+        const container = document.getElementById('lista-pilotos');
         container.innerHTML = '';
+        
+        let conteo = { verde: 0, amarillo: 0, rojo: 0 };
         
         snapshot.forEach(docSnap => {
             const p = docSnap.data();
             const id = docSnap.id;
-            const semaforo = obtenerClaseSemaforo(p.clases_restantes, p.ultima_asistencia);
+            const estado = obtenerEstado(p.clases_restantes, p.ultima_asistencia);
+            
+            conteo[estado.color]++;
             
             const card = document.createElement('div');
-            card.className = `card ${semaforo}`;
+            card.className = `card ${estado.color}`;
             card.innerHTML = `
                 <div class="info-piloto">
                     <span class="nombre-p">${p.alumno}</span>
                     <span class="detalle-p">Padre: ${p.responsable} | Saldo: <strong>${p.clases_restantes} clases</strong></span>
-                    ${semaforo === 'rojo' ? '<span class="alerta-p">⚠️ REQUIERE RENOVACIÓN</span>' : ''}
-                    ${semaforo === 'amarillo' ? '<span class="alerta-p">⚠️ SALDO BAJO / INACTIVO</span>' : ''}
+                    ${estado.color === 'rojo' ? '<span class="alerta-p">⚠️ SIN SALDO O INACTIVO MÁS DE 30 DÍAS</span>' : ''}
+                    ${estado.color === 'amarillo' ? '<span class="alerta-p">⚠️ ATENCIÓN: Pocas clases o inactivo</span>' : ''}
                 </div>
-                <button class="btn btn-checkin" onclick="window.hacerCheckin('${id}', ${p.clases_restantes})">
-                    Check-in
-                </button>
+                <div>
+                    <button class="btn btn-checkin" onclick="window.hacerCheckin('${id}', ${p.clases_restantes})">Check-in</button>
+                    ${estado.color === 'rojo' ? `<button class="btn btn-renovar" onclick="window.renovar('${id}', '${p.alumno}')">Recargar</button>` : ''}
+                </div>
             `;
             container.appendChild(card);
         });
+
+        // Actualizar Dashboard
+        document.getElementById('count-activos').innerText = conteo.verde;
+        document.getElementById('count-riesgo').innerText = conteo.amarillo;
+        document.getElementById('count-perdidos').innerText = conteo.rojo;
+
+        // Generar Resumen IA simulado
+        const textoIA = document.getElementById('ai-text');
+        if (conteo.rojo > 0) {
+            textoIA.innerHTML = `<strong>Ailligence Insights:</strong> Tienes ${conteo.rojo} piloto(s) sin saldo o perdidos. ¡Ofrece una recarga ahora mismo!`;
+        } else if (conteo.amarillo > 0) {
+            textoIA.innerHTML = `<strong>Ailligence Insights:</strong> ${conteo.amarillo} piloto(s) están a punto de agotar su paquete o bajar su ritmo. Buen momento para seguimientos.`;
+        } else {
+            textoIA.innerHTML = `<strong>Ailligence Insights:</strong> ¡Excelente! Todos tus pilotos están activos y al día con sus paquetes.`;
+        }
     });
 
-    // Función Global Check-in
     window.hacerCheckin = async (id, actual) => {
         if(actual > 0) {
-            await updateDoc(doc(db, "pilotos_v2", id), { 
-                clases_restantes: actual - 1,
-                ultima_asistencia: new Date().toISOString()
-            });
-            showToast("✅ Clase descontada y asistencia registrada.");
+            await updateDoc(doc(db, "pilotos_v2", id), { clases_restantes: actual - 1, ultima_asistencia: new Date().toISOString() });
+            showToast("✅ Asistencia registrada");
         } else {
-            alert("No tiene clases disponibles. Debe pagar un nuevo paquete.");
+            alert("Piloto sin saldo. Necesita recargar.");
+        }
+    };
+
+    window.renovar = async (id, nombre) => {
+        const clasesNuevas = prompt(`¿Cuántas clases compró ${nombre}? (Ej: 4, 8, 12)`);
+        if(clasesNuevas && !isNaN(clasesNuevas)) {
+            await updateDoc(doc(db, "pilotos_v2", id), { clases_restantes: parseInt(clasesNuevas), ultima_asistencia: new Date().toISOString() });
+            showToast(`✅ Saldo recargado a ${nombre}`);
         }
     };
 
