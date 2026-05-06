@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PoC - W1 BMX Club</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 650px; margin: auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h1 { color: #1a73e8; text-align: center; margin-bottom: 5px; }
+        h2 { color: #666; text-align: center; font-size: 16px; margin-top: 0; margin-bottom: 30px; font-weight: normal; }
+        .form-group { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        input, select, button { padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
+        input { flex: 1; min-width: 200px; }
+        button { background-color: #1a73e8; color: white; border: none; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        button:hover { background-color: #1557b0; }
+        .card { background: #fff; padding: 15px 20px; margin-bottom: 15px; border-left: 5px solid #1a73e8; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
+        .info-piloto { display: flex; flex-direction: column; gap: 5px; }
+        .nombre { font-size: 18px; font-weight: bold; }
+        .clases { font-size: 15px; color: #555; }
+        .alerta { color: #d93025; font-weight: bold; }
+        .btn-descontar { background-color: #34a853; padding: 10px 15px; }
+        .btn-descontar:hover { background-color: #2d8f47; }
+        .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #888; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>W1 BMX Club</h1>
+    <h2>Control de Pagos y Clases - Fase 1</h2>
+    
+    <div style="background: #e8f0fe; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+        <h3 style="margin-top: 0; color: #1a73e8;">Registrar Nuevo Piloto</h3>
+        <div class="form-group">
+            <input type="text" id="nombreInput" placeholder="Ej. Mariana Pajón">
+            <select id="paqueteInput">
+                <option value="1">Clase Individual</option>
+                <option value="4">Paquete x4 clases</option>
+                <option value="8">Paquete x8 clases</option>
+                <option value="12">Paquete x12 clases</option>
+            </select>
+            <button id="btnAgregar">Guardar Piloto</button>
+        </div>
+    </div>
+
+    <h3 style="border-bottom: 2px solid #f0f2f5; padding-bottom: 10px;">Pilotos Activos</h3>
+    <div id="lista-clientes">Cargando base de datos...</div>
+
+    <div class="footer">
+        Desarrollado por Ailligence
+    </div>
+</div>
+
+<script type="module">
+    // Importamos Firebase desde el CDN para que funcione directo en el navegador
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js";
+
+    // Configuración exacta del proyecto W1 BMX
+    const firebaseConfig = {
+      apiKey: "AIzaSyCX8gmekHpSVtvMxsnbBV7-kxD4VZoS6XM",
+      authDomain: "club-ciclismo-w1.firebaseapp.com",
+      projectId: "club-ciclismo-w1",
+      storageBucket: "club-ciclismo-w1.firebasestorage.app",
+      messagingSenderId: "726347754629",
+      appId: "1:726347754629:web:19a0e8a76153ff14dfcdec",
+      measurementId: "G-T6T4M8YD51"
+    };
+
+    // Inicializamos Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getFirestore(app);
+
+    // Conexión con el HTML
+    const listaClientes = document.getElementById('lista-clientes');
+    const btnAgregar = document.getElementById('btnAgregar');
+    const nombreInput = document.getElementById('nombreInput');
+    const paqueteInput = document.getElementById('paqueteInput');
+
+    const paquetesRef = collection(db, "pilotos");
+
+    // Lector en Tiempo Real
+    onSnapshot(paquetesRef, (snapshot) => {
+        listaClientes.innerHTML = '';
+        if (snapshot.empty) {
+            listaClientes.innerHTML = '<p style="color: #666; text-align: center;">No hay pilotos en el sistema. Registra el primero arriba.</p>';
+            return;
+        }
+
+        snapshot.forEach((documento) => {
+            const data = documento.data();
+            const id = documento.id;
+            
+            // Lógica de alerta si quedan 2 clases o menos
+            const esAlerta = data.clases_restantes <= 2 && data.paquete_inicial > 1;
+            
+            const div = document.createElement('div');
+            div.className = 'card';
+            div.innerHTML = `
+                <div class="info-piloto">
+                    <span class="nombre">${data.nombre}</span>
+                    <span class="clases ${esAlerta ? 'alerta' : ''}">
+                        Saldo: ${data.clases_restantes} clases ${esAlerta ? '⚠️ (Próximo a renovar)' : ''}
+                    </span>
+                </div>
+                <button class="btn-descontar" data-id="${id}" data-clases="${data.clases_restantes}">
+                    Check-in (Descontar)
+                </button>
+            `;
+            listaClientes.appendChild(div);
+        });
+
+        // Eventos para descontar clases
+        document.querySelectorAll('.btn-descontar').forEach(boton => {
+            boton.addEventListener('click', async (e) => {
+                const id = e.target.getAttribute('data-id');
+                const clases = parseInt(e.target.getAttribute('data-clases'));
+                
+                if(clases > 0) {
+                    await updateDoc(doc(db, "pilotos", id), { 
+                        clases_restantes: clases - 1 
+                    });
+                } else {
+                    alert('El saldo está en cero. El piloto debe adquirir un nuevo paquete o clase.');
+                }
+            });
+        });
+    });
+
+    // Creador de nuevos pilotos
+    btnAgregar.addEventListener('click', async () => {
+        const nombre = nombreInput.value.trim();
+        const clases = parseInt(paqueteInput.value);
+        
+        if(nombre === '') {
+            alert('Por favor ingresa el nombre del piloto.');
+            return;
+        }
+
+        btnAgregar.disabled = true;
+        btnAgregar.innerText = 'Guardando...';
+
+        try {
+            await addDoc(paquetesRef, {
+                nombre: nombre,
+                clases_restantes: clases,
+                paquete_inicial: clases,
+                fecha_registro: new Date().toISOString()
+            });
+            nombreInput.value = '';
+        } catch (error) {
+            console.error("Error agregando documento: ", error);
+            alert("Hubo un error al guardar. Revisa la consola.");
+        }
+
+        btnAgregar.disabled = false;
+        btnAgregar.innerText = 'Guardar Piloto';
+    });
+</script>
+
+</body>
+</html>
